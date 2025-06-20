@@ -3,7 +3,9 @@ package com.bmw.xp.llmfairytale
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.OutlinedButton
@@ -14,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 
 data class TaleInputData(val btnText: String, val speechInput: String)
 
@@ -41,7 +45,9 @@ fun TaleUI(msg: TaleInputData) {
                 onClick = { onClick() }
 
             ) { Text(msg.btnText) }
+
             Spacer(modifier = Modifier.height(4.dp))
+
             Text(
                 msg.speechInput,
                 fontWeight = FontWeight.Bold
@@ -50,11 +56,13 @@ fun TaleUI(msg: TaleInputData) {
             HorizontalDivider(thickness = 2.dp)
         }
         Spacer(modifier = Modifier.height(40.dp))
-        Column {
+        Row {
+
             Text (
                 text = llmOutputModel.value,
                 fontWeight = FontWeight.Bold
             )
+
         }
     }
 }
