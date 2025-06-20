@@ -1,5 +1,6 @@
 package com.bmw.xp.llmfairytale
 
+import kotlinx.coroutines.delay
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -21,16 +22,20 @@ const val llmInput = "Es war einmal ein kleiner Schneeflocke namens Luna, die in
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ParserUnitTest {
+
     @Test
     fun testParseLLM() {
-        val result = FairyTaleParser.parse(llmInput)
-        assertTrue(result)
-        val firstPhrase = FairyTaleParser.getPhrase(0).trim()
-        assertEquals("Es war einmal ein kleiner Schneeflocke namens Luna, die in einem dichten Schneesturm verloren ging", firstPhrase)
+        FairyTaleParser.parse(llmInput)
+        val phraseListIter = FairyTaleParser.phraseList.iterator()
+        var phrase = phraseListIter.next()
+        var expectedText = "Es war einmal ein kleiner Schneeflocke namens Luna, die in einem dichten Schneesturm verloren ging"
+        assertEquals(expectedText, phrase.text.trim())
 
-        val firstRGB = FairyTaleParser.getRGB(0)
-        assertEquals(40.toByte(), firstRGB.r)
-        assertEquals(40.toByte(), firstRGB.g)
-        assertEquals(80.toByte(), firstRGB.b)
+        var rgb = phrase.rgb
+        assertEquals(40, rgb.r)
+        assertEquals(40, rgb.g)
+        assertEquals(80, rgb.b)
     }
+
+
 }

@@ -1,37 +1,42 @@
 package com.bmw.xp.llmfairytale
 
+import com.bmw.xp.llmfairytale.data.Phrases
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 // create Parser as a singleton object
 object FairyTaleParser {
-    data class RGB(val r: Byte, val g: Byte, val b: Byte)
-    data class Phrase(val text: String, val rgb: RGB)
-    private val phraseList = arrayListOf<Phrase>()
+    val phraseList = arrayListOf<Phrases.Phrase>()
 
     fun parse(llmOutput: String) {
-        val multiCharDelimiter = llmOutput.split("\n")
+        val multiCharDelimiter = llmOutput.split("+")
         for (phrase in multiCharDelimiter) {
-            val item = llmOutput.split("&")
+            val item = phrase.split("&")
             val text = item.get(0)
             val rgbText = item.get(1)
             val rgb = parseRGB(rgbText)
-            val p = Phrase(text, rgb)
+            val p = Phrases.Phrase(text, rgb)
             phraseList.add(p)
+        }
+        phraseList.toString()
+    }
+
+    suspend fun getGroqAndParse(): String = withContext(Dispatchers.IO) {
+        try {
+            val out = GroqCloudCall().callServer()
+            parse(out)
+            return@withContext out
+        } catch (e: Exception) {
+            return@withContext "Fehler: ${e.message}"
         }
     }
 
-    fun getPhrase(i: Int) : String {
-        return phraseList.get(i).text
-    }
-
-    fun getRGB(i: Int) : FairyTaleParser.RGB {
-        return phraseList.get(i).rgb
-    }
-
-    private fun parseRGB(rgbInput: String) : RGB {
+    private fun parseRGB(rgbInput: String) : Phrases.RGB {
         // example value: 255:255:200
-        val rgbVals = rgbInput.split(":")
-        val r: Byte = rgbVals.get(0).trim().toInt().toByte()
-        val g: Byte = rgbVals.get(1).trim().toInt().toByte()
-        val b: Byte = rgbVals.get(2).trim().toInt().toByte()
-        return RGB(r,g,b)
+        val rgbVals = rgbInput.trim().split(":")
+        val r: Int = rgbVals[0].toInt()
+        val g: Int = rgbVals[1].toInt()
+        val b:Int  = rgbVals[2].toInt()
+        return Phrases.RGB(r,g,b)
     }
 }
